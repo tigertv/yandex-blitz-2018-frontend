@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>Goods</title>
+</head>
+<body>
+
+<script>
+// Товары в памяти
+const Good1 = { type: 'good', name: 'Смесь Friso Frisolaс Gold 2035', comments: [], related: [] };
+const Good2 = { type: 'good', name: 'МакБук PRO 2035 13\' w/ clickbar', comments: [], related: [] };
+const Good3 = { type: 'good', name: 'БФигурка*` Funko POP! Vinyl: Overwatch Уинстон', comments: [], related: [] };
+const Good4 = { type: 'good', name: 'Good4', comments: [], related: [] };
+const Good5 = { type: 'good', name: 'Good5', comments: [], related: [] };
+const Good6 = { type: 'good', name: 'Good6', comments: [], related: [] };
+
+// Отзывы в памяти
+const Comment1 = { type: 'comment', text: 'Классный ноутбук! 1', comments: [], parent: null };
+const Comment2 = { type: 'comment', text: 'Не понравился! Кликбар не работает совсем! 2', comments: [], parent: null };
+const Comment3 = { type: 'comment', text: 'БХорошая цена, у малыша не было аллергии 3', comments: [], parent: null };
+const Comment4 = { type: 'comment', text: 'Хорошая цена, у малыша небыло аллергии на 4', comments: [], parent: null };
+const Comment5 = { type: 'comment', text: 'ЕБошая цена, у малыша не было аллергии на 5', comments: [], parent: null };
+const Comment6 = { type: 'comment', text: 'ДAБошая цена, у не было аллергии на неё6', comments: [], parent: null };
+const Comment7 = { type: 'comment', text: 'Юая це0 - на, у не было а ллергии на неё7', comments: [], parent: null };
+const Comment8 = { type: 'comment', text: 'ПЮая цена, у не было'+' аллергии на неё8', comments: [], parent: null };
+const Comment9 = { type: 'comment', text: 'Щая цена, у не было  sdsd а-ллергии на неё9', comments: [], parent: null };
+const Comment10 = { type: 'comment', text: 'Com** llls  ment10', comments: [], parent: null };
+const Comment11 = { type: 'comment', text: 'Comment11', comments: [], parent: null };
+const Comment12 = { type: 'comment', text: 'Comment12', comments: [], parent: null };
+const Comment13 = { type: 'comment', text: 'Comment13', comments: null, parent: null };
+const Comment14 = { type: 'comment', text: 'Comment13', comments: null, parent: null };
+
+// Похожие товары
+Good3.related.push(Good1, Good2);
+Good1.related.push(Good3);
+Good2.related.push(Good3);
+Good4.related.push(Good3);
+Good5.related.push(Good4);
+Good6.related.push(Good5);
+
+// Расставляем комментарии
+Comment1.parent = Good2;
+Good2.comments.push(Comment1);
+
+Comment2.parent = Comment1;
+Comment1.comments.push(Comment2);
+
+Comment3.parent = Good1;
+Good1.comments.push(Comment3);
+
+Comment4.parent = Comment1;
+Comment1.comments.push(Comment4);
+
+Comment5.parent = Comment4;
+Comment4.comments.push(Comment5);
+
+Comment6.parent = Comment4;
+Comment4.comments.push(Comment6);
+
+Comment7.parent = Comment1;
+Comment1.comments.push(Comment7);
+
+Comment8.parent = Comment7;
+Comment7.comments.push(Comment8);
+
+Comment9.parent = Comment7;
+Comment7.comments.push(Comment9);
+
+/*
+
+Comment12.parent = Good6;
+Good6.comments.push(Comment12);
+
+Comment14.parent = Good2;
+Good2.comments.push(Comment14);
+//*/
+
+var data = Comment3;
+//data = Comment13;
+//data = Comment8;
+//data = Comment9;
+//data = Good2;
+//data = null;
+
+function superFunc(data) {
+
+	function sortGoods(goods) {
+		if (goods == null) return;
+
+		goods.sort(function(a,b) {
+			let nameA = a.name;
+			let nameB = b.name;
+
+			if (nameA < nameB) {
+				return -1;
+			}
+			if (nameA > nameB) {
+				return 1;
+			}
+			return 0;
+		});
+	}
+
+	function sortComments(comments) {
+		if (comments == null) return;
+
+		comments.sort(function(a,b) {
+			let textA = a.text;
+			let textB = b.text;
+
+			if (textA < textB) {
+				return -1;
+			}
+			if (textA > textB) {
+				return 1;
+			}
+			return 0;
+		});
+	}
+
+	function formCommentText(comment, level) {
+		let output = ' '.repeat(level*2)+"- "+ comment.text;
+		if (level == 0) {
+			output += " - про " + comment.parent.name;
+		}
+		output += "\n";
+
+		let newLevel = ++level;
+
+		sortComments(comment.comments);
+
+		for (let item of comment.comments) {
+			output += formCommentText(item, newLevel);
+		}
+
+		return output;
+	}
+
+
+	// Markdown generation
+
+	// find the first good
+	let tdata = data;
+
+	while (tdata.type == "comment" && tdata.parent != null) {
+		tdata = tdata.parent;	
+	}
+
+	let comments = "## Отзывы\n\n";
+	let goods = "## Товары\n\n";
+
+	// the current tdata type is good
+	let allgoods = [];
+	allgoods.push(tdata);
+
+	for (let good of allgoods) {
+		for (let item of good.related) {
+			if (!allgoods.includes(item)) {
+				allgoods.push(item);
+			}
+		}
+	}
+
+	sortGoods(allgoods);
+
+	for (let item of allgoods) {
+		goods += "- " + item.name + "\n";
+		sortGoods(item.related);
+
+		for (let item2 of item.related) {
+			goods += "  * " + item2.name + "\n";
+		}
+
+	}
+
+	//generate comments
+	let firstComments = [];
+	for (let good of allgoods) {
+		firstComments = firstComments.concat(good.comments);	
+	}
+
+	sortComments(firstComments);
+
+	for (let item of firstComments) {
+		comments += formCommentText(item, 0);
+	}
+
+	comments += "\n";
+	return comments + goods;
+}
+
+console.log(superFunc(data));
+
+
+</script>
+
+</body>
+</html>

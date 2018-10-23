@@ -1,0 +1,58 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8" />
+</head>
+<body>
+<div id="container" style="width: 800px;height: 20px;font-size: 12px;"></div>
+
+<script>
+
+function getLetterSpacing (container, str, min, max) {  
+  
+	container.innerHTML = str;
+
+	container.style.letterSpacing = min + "px";
+	if(container.scrollHeight > container.clientHeight || container.scrollWidth > container.clientWidth) { 
+		return null;
+	}
+
+	size = (min + max) >> 1;
+
+	while (size != min) {
+		container.style.letterSpacing = size + "px";
+		
+		if(container.scrollHeight > container.clientHeight || container.scrollWidth > container.clientWidth) { 
+			max = size;
+		} else {
+			min = size;
+		}
+		
+		size = (min + max) >> 1;
+	}  
+
+	if (max > min) {
+		container.style.letterSpacing = max + "px";
+		if(container.scrollHeight > container.clientHeight || container.scrollWidth > container.clientWidth) { 
+			size = min;
+		} else {
+			size = max;
+		}
+	}
+
+	return size;
+}
+
+let result = getLetterSpacing(  
+    document.getElementById('container'),  
+    'ПРОГРАММИРОВАНИЕ НА JS МОЖЕТ БЫТЬ ОПАСНО ДЛЯ ЗДОРОВЬЯ',  
+    5,  
+    20  
+);
+
+console.log(result);
+
+</script>
+
+</body>
+</html>
